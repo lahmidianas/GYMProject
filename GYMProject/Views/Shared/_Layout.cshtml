@@ -1,0 +1,135 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - GYMProject</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="icon" href="~/Content/images/favicon.ico" type="image/x-icon" /> <!-- Add this line to include the favicon -->
+    <style>
+        /* General padding for the body to accommodate the fixed navbar */
+        body {
+            padding-top: 50px;
+            padding-bottom: 20px;
+        }
+
+        /* Set padding to keep content from hitting the edges */
+        .body-content {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        /* Override the default bootstrap behavior for horizontal description lists */
+        .dl-horizontal dt {
+            white-space: normal;
+        }
+
+        /* Set maximum width on form input elements */
+        input,
+        select,
+        textarea {
+            max-width: 280px;
+            width: 100%; /* Ensure elements are responsive */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+            /* Additional form element styling for better UX */
+            input:focus,
+            select:focus,
+            textarea:focus {
+                outline: none; /* Remove default outline */
+                border-color: #5cb85c; /* Change border color on focus */
+                box-shadow: 0 0 5px rgba(92, 184, 92, 0.5); /* Add shadow for better visibility */
+            }
+
+        /* Add some spacing between form elements */
+        input,
+        select,
+        textarea {
+            margin-bottom: 15px;
+        }
+
+        /* Improve the appearance of the footer */
+        footer {
+            text-align: center; /* Center-align footer text */
+            padding: 20px 0; /* Add padding to the footer */
+            background-color: #000; /* Black background for the footer */
+            color: #fff; /* White text color for the footer */
+        }
+
+        /* Navbar styling */
+        .navbar-inverse {
+            background-color: black; /* Set the background color to black */
+            border-color: black; /* Set the border color to black */
+        }
+
+            /* Navbar brand (logo) styling */
+            .navbar-inverse .navbar-brand {
+                color: white; /* Set the brand text color to white */
+            }
+
+            /* Navbar link styling */
+            .navbar-inverse .navbar-nav > li > a {
+                color: white; /* Set the link text color to white */
+            }
+
+                /* Navbar link hover and active state */
+                .navbar-inverse .navbar-nav > li > a:hover,
+                .navbar-inverse .navbar-nav > li > a:focus,
+                .navbar-inverse .navbar-nav > .active > a {
+                    color: #ccc; /* Set the link text color to light grey on hover/focus/active */
+                    background-color: black; /* Ensure the background color remains black */
+                }
+
+            /* Additional styling for right-aligned buttons */
+            .navbar-inverse .navbar-right {
+                margin-right: 0; /* Remove default margin */
+            }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                    <img src="~/Content/images/logo.png" alt="Panda Gym Logo" style="display:inline; height:30px; margin-right:10px;">
+                    PANDA GYM
+                </a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Members", "Index", "Member")</li>
+                    <li>@Html.ActionLink("Staff", "Index", "Staff")</li>
+                    <li>@Html.ActionLink("Sessions", "Index", "Session")</li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Logout", "Logout", "Login")</li> <!-- Add this line for the Logout button -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container body-content">
+        @RenderBody() <!-- Placeholder for child views' content -->
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - PANDA GYM</p> <!-- Footer text -->
+        </footer>
+    </div>
+
+    <!-- Script Inclusions -->
+    @Scripts.Render("~/bundles/jquery") <!-- Includes jQuery -->
+    @Scripts.Render("~/bundles/bootstrap") <!-- Includes Bootstrap JavaScript -->
+    @RenderSection("scripts", required: false) <!-- Additional scripts from child views -->
+</body>
+</html>

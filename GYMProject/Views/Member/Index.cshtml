@@ -1,0 +1,134 @@
+﻿@model IEnumerable<GYMProject.Models.Member>
+
+@{
+    ViewBag.Title = "Member Form";
+}
+
+<h2>Member Form</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Members List</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nom</th>
+                    <th>Prenom</th>
+                    <th>Phone</th>
+                    <th>Membership Type</th>
+                    <th>Start Membership Date</th>
+                    <th>End Membership Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var member in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="memberId" value="@member.Id" />
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => member.Nom)</td>
+                        <td>@Html.DisplayFor(modelItem => member.Prenom)</td>
+                        <td>@Html.DisplayFor(modelItem => member.Phone)</td>
+                        <td>@Html.DisplayFor(modelItem => member.MembershipType)</td>
+                        <td>@Html.DisplayFor(modelItem => member.StartMembershipDate)</td>
+                        <td>@Html.DisplayFor(modelItem => member.EndMembershipDate)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h4>Member Details</h4>
+        @using (Html.BeginForm("ProcessCommand", "Member", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                @Html.HiddenFor(model => model.First().Id)
+                @Html.LabelFor(model => model.First().Nom)
+                @Html.TextBoxFor(model => model.First().Nom, new { @class = "form-control", placeholder = "Nom", id = "txtNom" })
+                @Html.ValidationMessageFor(model => model.First().Nom)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().Prenom)
+                @Html.TextBoxFor(model => model.First().Prenom, new { @class = "form-control", placeholder = "Prenom", id = "txtPrenom" })
+                @Html.ValidationMessageFor(model => model.First().Prenom)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().Phone)
+                @Html.TextBoxFor(model => model.First().Phone, new { @class = "form-control", placeholder = "Phone", id = "txtPhone" })
+                @Html.ValidationMessageFor(model => model.First().Phone)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().MembershipType)
+                @Html.DropDownListFor(model => model.First().MembershipType,
+                                      new SelectList(new List<string>
+                                      {
+                                          "bodybuilding",
+                                          "taekwondo",
+                                          "boxing",
+                                          "full-contact",
+                                          "karate",
+                                          "aerobic"
+                                      }),
+                                      "Select Membership Type",
+                                      new { @class = "form-control", id = "ddlMembershipType" })
+                @Html.ValidationMessageFor(model => model.First().MembershipType)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().StartMembershipDate)
+                @Html.TextBoxFor(model => model.First().StartMembershipDate, new { @class = "form-control", placeholder = "Start Membership Date", type = "date", id = "txtStartMembershipDate" })
+                @Html.ValidationMessageFor(model => model.First().StartMembershipDate)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().EndMembershipDate)
+                @Html.TextBoxFor(model => model.First().EndMembershipDate, new { @class = "form-control", placeholder = "End Membership Date", type = "date", id = "txtEndMembershipDate" })
+                @Html.ValidationMessageFor(model => model.First().EndMembershipDate)
+            </div>
+
+            <div class="form-group">
+                <button type="submit" name="command" value="Add" class="btn btn-primary">Add</button>
+                <button type="submit" name="command" value="Update" class="btn btn-primary">Update</button>
+                <button type="submit" name="command" value="Delete" class="btn btn-danger">Delete</button>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(function () {
+            $('input[type="checkbox"]').change(function () {
+                if (this.checked) {
+                    var memberId = $(this).val();
+                    // AJAX call to get member details
+                    $.ajax({
+                        url: '@Url.Action("GetMemberDetails", "Member")',
+                        type: 'GET',
+                        data: { id: memberId },
+                        success: function (data) {
+                            $('#txtNom').val(data.Nom);
+                            $('#txtPrenom').val(data.Prenom);
+                            $('#txtPhone').val(data.Phone);
+                            $('#ddlMembershipType').val(data.MembershipType);
+                            $('#txtStartMembershipDate').val(data.StartMembershipDate);
+                            $('#txtEndMembershipDate').val(data.EndMembershipDate);
+                        },
+                        error: function () {
+                            alert('Error retrieving member details.');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="jumbotron" style="background-color: #fff; color: #000;">
+                <h1>Welcome to the GYM Management System!</h1>
+                <p class="lead">Manage your members, staff, and sessions with ease.</p>
+                <p>
+                    @Html.ActionLink("Manage Members", "Index", "Member", null, new { @class = "btn btn-custom btn-lg" })
+                    @Html.ActionLink("Manage Staff", "Index", "Staff", null, new { @class = "btn btn-custom btn-lg" })
+                    @Html.ActionLink("Manage Sessions", "Index", "Session", null, new { @class = "btn btn-custom btn-lg" })
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6 slider-container">
+            <div class="slider">
+                <div><img src="~/content/images/slider-image4.jpg" alt="Slider Image 4"></div>
+                <div><img src="~/content/images/slider-image5.jpg" alt="Slider Image 5"></div>
+                <div><img src="~/content/images/slider-image6.jpg" alt="Slider Image 6"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.slider').slick({
+                dots: true,
+                infinite: true,
+                speed: 500,
+                slidesToShow: 1,
+                adaptiveHeight: true,
+                autoplay: true,
+                autoplaySpeed: 1000 // Speed in milliseconds (1 second)
+            });
+        });
+    </script>
+}
+
+<style>
+    body {
+        /* Background color or image */
+        background-color: #000; /* Example color */
+        /* background-image: url('~/content/images/background.jpg'); Uncomment to use an image */
+        background-size: cover; /* Cover the entire page */
+        background-position: center; /* Center the image */
+        background-repeat: no-repeat; /* Prevent the image from repeating */
+    }
+
+    .slider img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .btn-custom {
+        background-color: #000 !important;
+        color: #fff !important;
+        border-color: #000 !important;
+    }
+
+    .jumbotron {
+        padding: 2rem 1rem;
+        background-color: #fff; /* White background */
+        color: #000; /* Black text */
+    }
+
+    .slider-container {
+        margin-top: 5rem; /* Adjust this value as needed */
+    }
+</style>

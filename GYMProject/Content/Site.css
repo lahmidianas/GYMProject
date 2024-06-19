@@ -1,0 +1,48 @@
+﻿/* General padding for the body to accommodate the fixed navbar */
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior for horizontal description lists */
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set maximum width on form input elements */
+input,
+select,
+textarea {
+    max-width: 280px;
+    width: 100%; /* Ensure elements are responsive */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+    /* Additional form element styling for better UX */
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none; /* Remove default outline */
+        border-color: #5cb85c; /* Change border color on focus */
+        box-shadow: 0 0 5px rgba(92, 184, 92, 0.5); /* Add shadow for better visibility */
+    }
+
+/* Add some spacing between form elements */
+input,
+select,
+textarea {
+    margin-bottom: 15px;
+}
+
+/* Improve the appearance of the footer */
+footer {
+    text-align: center; /* Center-align footer text */
+    padding: 20px 0; /* Add padding to the footer */
+    background-color: #f8f8f8; /* Light background for the footer */
+}

@@ -1,0 +1,166 @@
+﻿@model IEnumerable<GYMProject.Models.Staff>
+@using GYMProject.Models
+
+@{
+    ViewBag.Title = "Staff Index";
+}
+
+<h2>Staff Index</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Staff List</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Nom</th>
+                    <th>Prenom</th>
+                    <th>Job</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var staff in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="staff-checkbox" name="staffId" value="@staff.StaffId" />
+                        </td>
+                        <td>@staff.Nom</td>
+                        <td>@staff.Prenom</td>
+                        <td>@staff.Job</td>
+                        <td>@staff.Phone</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h4>Staff Details</h4>
+        @using (Html.BeginForm("Edit", "Staff", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                @Html.HiddenFor(model => model.First().StaffId)
+                @Html.LabelFor(model => model.First().Nom)
+                @Html.TextBoxFor(model => model.First().Nom, new { @class = "form-control", placeholder = "Nom", id = "txtNom" })
+                @Html.ValidationMessageFor(model => model.First().Nom)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().Prenom)
+                @Html.TextBoxFor(model => model.First().Prenom, new { @class = "form-control", placeholder = "Prenom", id = "txtPrenom" })
+                @Html.ValidationMessageFor(model => model.First().Prenom)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().Job)
+                @Html.TextBoxFor(model => model.First().Job, new { @class = "form-control", placeholder = "Job", id = "txtJob" })
+                @Html.ValidationMessageFor(model => model.First().Job)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().Phone)
+                @Html.TextBoxFor(model => model.First().Phone, new { @class = "form-control", placeholder = "Phone", id = "txtPhone" })
+                @Html.ValidationMessageFor(model => model.First().Phone)
+            </div>
+
+            <div class="form-group">
+                <button type="submit" name="command" value="Edit" class="btn btn-primary">Edit</button>
+                <button type="button" id="btnDelete" class="btn btn-danger">Delete</button>
+            </div>
+        }
+
+        <hr />
+
+        <h4>Create New Staff</h4>
+        @using (Html.BeginForm("Create", "Staff", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().Nom)
+                @Html.TextBoxFor(model => model.First().Nom, new { @class = "form-control", placeholder = "Nom", id = "txtCreateNom" })
+                @Html.ValidationMessageFor(model => model.First().Nom)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().Prenom)
+                @Html.TextBoxFor(model => model.First().Prenom, new { @class = "form-control", placeholder = "Prenom", id = "txtCreatePrenom" })
+                @Html.ValidationMessageFor(model => model.First().Prenom)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().Job)
+                @Html.TextBoxFor(model => model.First().Job, new { @class = "form-control", placeholder = "Job", id = "txtCreateJob" })
+                @Html.ValidationMessageFor(model => model.First().Job)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.First().Phone)
+                @Html.TextBoxFor(model => model.First().Phone, new { @class = "form-control", placeholder = "Phone", id = "txtCreatePhone" })
+                @Html.ValidationMessageFor(model => model.First().Phone)
+            </div>
+
+            <button type="submit" class="btn btn-success">Create</button>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(function () {
+            $('.staff-checkbox').change(function () {
+                if (this.checked) {
+                    var staffId = $(this).val();
+                    // AJAX call to get staff details
+                    $.ajax({
+                        url: '@Url.Action("GetStaffDetails", "Staff")',
+                        type: 'GET',
+                        data: { id: staffId },
+                        success: function (data) {
+                            $('#txtNom').val(data.Nom);
+                            $('#txtPrenom').val(data.Prenom);
+                            $('#txtJob').val(data.Job);
+                            $('#txtPhone').val(data.Phone);
+                            // Set the StaffId for the hidden field
+                            $('#StaffId').val(data.StaffId);
+                        },
+                        error: function () {
+                            alert('Error retrieving staff details.');
+                        }
+                    });
+                }
+            });
+
+            // Delete button click handler
+            $('#btnDelete').click(function () {
+                var staffId = $('input[name=staffId]:checked').val();
+                if (staffId) {
+                    if (confirm('Are you sure you want to delete this staff member?')) {
+                        // AJAX call to delete staff member
+                        $.ajax({
+                            url: '@Url.Action("Delete", "Staff")',
+                            type: 'POST',
+                            data: { id: staffId },
+                            success: function () {
+                                alert('Staff member deleted successfully.');
+                                // Optionally, you can reload the page or update the table after deletion
+                                location.reload();
+                            },
+                            error: function () {
+                                alert('Error deleting staff member.');
+                            }
+                        });
+                    }
+                } else {
+                    alert('Please select a staff member to delete.');
+                }
+            });
+        });
+    </script>
+}
