@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using GYMProject.Models;
+using GYMProject.Security;
 
 namespace GYMProject.Data
 {
@@ -18,7 +21,6 @@ namespace GYMProject.Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            // Fluent API configurations if needed
             base.OnModelCreating(modelBuilder);
         }
 
@@ -26,9 +28,22 @@ namespace GYMProject.Data
         {
             protected override void Seed(GYMContext context)
             {
+                var seedPassword = ConfigurationManager.AppSettings["SeedAdminPassword"];
+                if (string.IsNullOrWhiteSpace(seedPassword))
+                {
+                    throw new InvalidOperationException("AppSetting 'SeedAdminPassword' is required. Configure it in environment-specific Web.config transforms or deployment settings.");
+                }
+
+                var passwordData = PasswordHasher.HashPassword(seedPassword);
                 var admins = new List<Admin>
                 {
-                    new Admin { Username = "admin", Password = "password" }
+                    new Admin
+                    {
+                        Username = "admin",
+                        PasswordHash = passwordData.hash,
+                        PasswordSalt = passwordData.salt,
+                        PasswordIterations = passwordData.iterations
+                    }
                 };
 
                 admins.ForEach(a => context.Admins.Add(a));

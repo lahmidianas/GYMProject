@@ -1,11 +1,12 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
-using System.Web.Security; // Ensure this namespace is included
+using System.Web.Security;
 using GYMProject.Data;
-using GYMProject.Models;
+using GYMProject.Security;
 
 namespace GYMProject.Controllers
 {
+    [AllowAnonymous]
     public class LoginController : Controller
     {
         private readonly GYMContext _context;
@@ -25,13 +26,11 @@ namespace GYMProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(string username, string password)
         {
-            var admin = _context.Admins.FirstOrDefault(a => a.Username == username && a.Password == password);
+            var admin = _context.Admins.FirstOrDefault(a => a.Username == username);
 
-            if (admin != null)
+            if (admin != null && PasswordHasher.VerifyPassword(password, admin.PasswordHash, admin.PasswordSalt, admin.PasswordIterations))
             {
-                // Simulate successful login
                 FormsAuthentication.SetAuthCookie(admin.Username, false);
-
                 return RedirectToAction("Index", "Home");
             }
 
@@ -39,6 +38,7 @@ namespace GYMProject.Controllers
             return View();
         }
 
+        [Authorize]
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();

@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace GYMProject.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class HomeController : Controller
     {
         
