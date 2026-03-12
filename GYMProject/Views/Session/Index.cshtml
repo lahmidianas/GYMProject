@@ -12,9 +12,9 @@
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th>@Html.DisplayNameFor(model => model.Sessions.First().HeureDebut)</th>
-                    <th>@Html.DisplayNameFor(model => model.Sessions.First().HeureFin)</th>
-                    <th>@Html.DisplayNameFor(model => model.Sessions.First().SessionType)</th>
+                    <th>Heure Debut</th>
+                    <th>Heure Fin</th>
+                    <th>Session Type</th>
                     <th>Coach</th>
                     <th>Actions</th>
                 </tr>
@@ -23,42 +23,46 @@
                 @foreach (var item in Model.Sessions)
                 {
                     <tr>
-                        <td>@Html.DisplayFor(modelItem => item.HeureDebut)</td>
-                        <td>@Html.DisplayFor(modelItem => item.HeureFin)</td>
-                        <td>@Html.DisplayFor(modelItem => item.SessionType)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Staff.Nom) @Html.DisplayFor(modelItem => item.Staff.Prenom)</td>
+                        <td>@item.HeureDebut</td>
+                        <td>@item.HeureFin</td>
+                        <td>@item.SessionType</td>
+                        <td>@item.Staff.Nom @item.Staff.Prenom</td>
                         <td>
-                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-primary btn-sm" }) |
-                            @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-info btn-sm" }) |
-                            @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Are you sure you want to delete this session?');" })
+                            <button type="button" class="btn btn-primary btn-sm btn-load" data-id="@item.Id">Load</button>
+                            <button type="button" class="btn btn-info btn-sm btn-details" data-id="@item.Id">Details</button>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-id="@item.Id">Delete</button>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
+
     <div class="col-md-4">
-        <h3>Create New Session</h3>
-        @using (Html.BeginForm("Add", "Session", FormMethod.Post, new { id = "createForm" }))
+        <h3 id="formTitle">Create New Session</h3>
+        @using (Html.BeginForm("Add", "Session", FormMethod.Post, new { id = "sessionForm" }))
         {
             @Html.AntiForgeryToken()
+            <input type="hidden" id="sessionId" name="Id" value="0" />
+
             <div class="form-group">
-                @Html.LabelFor(model => model.NewSession.HeureDebut)
-                @Html.TextBoxFor(model => model.NewSession.HeureDebut, new { @class = "form-control" })
+                <label for="heureDebut">Heure Debut</label>
+                <input class="form-control" id="heureDebut" name="HeureDebut" />
             </div>
             <div class="form-group">
-                @Html.LabelFor(model => model.NewSession.HeureFin)
-                @Html.TextBoxFor(model => model.NewSession.HeureFin, new { @class = "form-control" })
+                <label for="heureFin">Heure Fin</label>
+                <input class="form-control" id="heureFin" name="HeureFin" />
             </div>
             <div class="form-group">
-                @Html.LabelFor(model => model.NewSession.SessionType)
-                @Html.DropDownListFor(model => model.NewSession.SessionType, Model.SessionTypes, "Select a session type", new { @class = "form-control" })
+                <label for="sessionType">Session Type</label>
+                @Html.DropDownList("SessionType", Model.SessionTypes, "Select a session type", new { @class = "form-control", id = "sessionType" })
             </div>
             <div class="form-group">
-                @Html.LabelFor(model => model.NewSession.StaffId, "Coach")
-                @Html.DropDownListFor(model => model.NewSession.StaffId, Model.Coaches, "Select a coach", new { @class = "form-control" })
+                <label for="staffId">Coach</label>
+                @Html.DropDownList("StaffId", Model.Coaches, "Select a coach", new { @class = "form-control", id = "staffId" })
             </div>
-            <button type="submit" class="btn btn-success">Create</button>
+            <button type="submit" class="btn btn-success" id="btnSave">Create</button>
+            <button type="button" class="btn btn-default" id="btnCancelEdit" style="display:none;">Cancel</button>
         }
     </div>
 </div>
@@ -66,22 +70,115 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('#createForm').submit(function (event) {
+        function setCreateMode() {
+            $('#sessionForm').attr('action', '@Url.Action("Add", "Session")');
+            $('#sessionId').val(0);
+            $('#heureDebut').val('');
+            $('#heureFin').val('');
+            $('#sessionType').val('');
+            $('#staffId').val('');
+            $('#formTitle').text('Create New Session');
+            $('#btnSave').text('Create');
+            $('#btnCancelEdit').hide();
+        }
+
+        $('#sessionForm').submit(function (event) {
             event.preventDefault();
             var $form = $(this);
             $.ajax({
-                type: $form.attr('method'),
+                type: 'POST',
                 url: $form.attr('action'),
                 data: $form.serialize(),
                 success: function (response) {
                     if (response.success) {
-                        alert('Session created successfully!');
+                        alert('Session saved successfully!');
                         location.reload();
                     } else {
-                        alert('Error: ' + response.errors.join(', '));
+                        alert('Error: ' + (response.errors || []).join(', '));
                     }
+                },
+                error: function () {
+                    alert('An error occurred while saving the session.');
                 }
             });
+        });
+
+        $('.btn-delete').click(function () {
+            var id = $(this).data('id');
+            if (!confirm('Are you sure you want to delete this session?')) {
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Delete", "Session")',
+                data: { id: id },
+                success: function (response) {
+                    if (response.success) {
+                        alert('Session deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Unable to delete session.');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while deleting the session.');
+                }
+            });
+        });
+
+        $('.btn-details').click(function () {
+            var id = $(this).data('id');
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("Details", "Session")',
+                data: { id: id },
+                success: function (response) {
+                    if (!response.success) {
+                        alert(response.message || 'Session not found.');
+                        return;
+                    }
+
+                    var session = response.session;
+                    alert('Session #' + session.Id + '\nType: ' + session.SessionType + '\nHeure Debut: ' + session.HeureDebut + '\nHeure Fin: ' + session.HeureFin + '\nCoach ID: ' + session.StaffId);
+                },
+                error: function () {
+                    alert('An error occurred while loading session details.');
+                }
+            });
+        });
+
+        $('.btn-load').click(function () {
+            var id = $(this).data('id');
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("Details", "Session")',
+                data: { id: id },
+                success: function (response) {
+                    if (!response.success) {
+                        alert(response.message || 'Session not found.');
+                        return;
+                    }
+
+                    var session = response.session;
+                    $('#sessionForm').attr('action', '@Url.Action("Update", "Session")');
+                    $('#sessionId').val(session.Id);
+                    $('#heureDebut').val(session.HeureDebut);
+                    $('#heureFin').val(session.HeureFin);
+                    $('#sessionType').val(session.SessionType);
+                    $('#staffId').val(session.StaffId);
+                    $('#formTitle').text('Update Session');
+                    $('#btnSave').text('Update');
+                    $('#btnCancelEdit').show();
+                },
+                error: function () {
+                    alert('An error occurred while loading the session for editing.');
+                }
+            });
+        });
+
+        $('#btnCancelEdit').click(function () {
+            setCreateMode();
         });
     });
 </script>

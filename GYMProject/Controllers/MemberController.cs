@@ -8,6 +8,7 @@ using GYMProject.Data;
 
 namespace GYMProject.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class MemberController : Controller
     {
         private GYMContext db = new GYMContext();

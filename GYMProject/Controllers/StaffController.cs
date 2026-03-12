@@ -8,6 +8,7 @@ using GYMProject.Data;
 
 namespace GYMProject.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class StaffController : Controller
     {
         private readonly IRepository<Staff> _staffRepository;
@@ -51,7 +52,7 @@ namespace GYMProject.Controllers
         {
             if (staffIds == null || staffIds.Count == 0)
             {
-                return HttpNotFound();
+                return Json(new { success = false, message = "No staff selected." });
             }
 
             foreach (var id in staffIds)
@@ -62,8 +63,9 @@ namespace GYMProject.Controllers
                     _staffRepository.Delete(id);
                 }
             }
+
             _staffRepository.SaveChanges();
-            return RedirectToAction("Index");
+            return Json(new { success = true });
         }
 
         // AJAX: Get staff details
