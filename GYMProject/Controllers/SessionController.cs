@@ -7,6 +7,7 @@ using GYMProject.Data;
 
 namespace GYMProject.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class SessionController : Controller
     {
         private readonly IRepository<Session> _sessionRepository;
@@ -44,17 +45,21 @@ namespace GYMProject.Controllers
         }
 
         [HttpPost]
-        public ActionResult Add(SessionViewModel viewModel)
+        public ActionResult Add(Session session)
         {
             if (ModelState.IsValid)
             {
-                var session = viewModel.NewSession;
                 session.Staff = _staffRepository.GetById(session.StaffId);
                 _sessionRepository.Add(session);
-                _sessionRepository.SaveChanges(); // Save changes after adding
+                _sessionRepository.SaveChanges();
                 return Json(new { success = true });
             }
-            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)) });
+
+            return Json(new
+            {
+                success = false,
+                errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
+            });
         }
 
         [HttpPost]

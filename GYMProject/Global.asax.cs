@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Security.Principal;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-
 using Unity;
 using Unity.Mvc5;
 using GYMProject.Data;
@@ -21,20 +19,32 @@ namespace GYMProject
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            
 
             var container = new UnityContainer();
             container.RegisterType<GYMContext>();
             container.RegisterType(typeof(IRepository<>), typeof(Repository<>));
             DependencyResolver.SetResolver(new UnityDependencyResolver(container));
         }
+
         protected void Application_PostAuthenticateRequest()
         {
-            if (System.Web.HttpContext.Current.User.Identity.IsAuthenticated)
+            var currentUser = HttpContext.Current?.User;
+            if (currentUser?.Identity == null || !currentUser.Identity.IsAuthenticated)
             {
-                var username = System.Web.HttpContext.Current.User.Identity.Name;
-                var roles = new[] { "Admin" }; // Adjust roles as needed
-                System.Web.HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(username), roles);
+                return;
+            }
+
+            var username = currentUser.Identity.Name;
+            var roles = ResolveRoles(username);
+            HttpContext.Current.User = new GenericPrincipal(new GenericIdentity(username), roles);
+        }
+
+        private static string[] ResolveRoles(string username)
+        {
+            using (var context = new GYMContext())
+            {
+                var isAdmin = context.Admins.Any(a => a.Username == username);
+                return isAdmin ? new[] { "Admin" } : new string[0];
             }
         }
     }

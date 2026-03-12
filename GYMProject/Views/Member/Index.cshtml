@@ -46,51 +46,49 @@
             @Html.AntiForgeryToken()
 
             <div class="form-group">
-                @Html.HiddenFor(model => model.First().Id)
-                @Html.LabelFor(model => model.First().Nom)
-                @Html.TextBoxFor(model => model.First().Nom, new { @class = "form-control", placeholder = "Nom", id = "txtNom" })
-                @Html.ValidationMessageFor(model => model.First().Nom)
+                <label for="Id">Id</label>
+                <input type="hidden" id="Id" name="Id" value="0" />
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.First().Prenom)
-                @Html.TextBoxFor(model => model.First().Prenom, new { @class = "form-control", placeholder = "Prenom", id = "txtPrenom" })
-                @Html.ValidationMessageFor(model => model.First().Prenom)
+                <label for="txtNom">Nom</label>
+                <input class="form-control" placeholder="Nom" id="txtNom" name="Nom" />
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.First().Phone)
-                @Html.TextBoxFor(model => model.First().Phone, new { @class = "form-control", placeholder = "Phone", id = "txtPhone" })
-                @Html.ValidationMessageFor(model => model.First().Phone)
+                <label for="txtPrenom">Prenom</label>
+                <input class="form-control" placeholder="Prenom" id="txtPrenom" name="Prenom" />
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.First().MembershipType)
-                @Html.DropDownListFor(model => model.First().MembershipType,
-                                      new SelectList(new List<string>
-                                      {
-                                          "bodybuilding",
-                                          "taekwondo",
-                                          "boxing",
-                                          "full-contact",
-                                          "karate",
-                                          "aerobic"
-                                      }),
-                                      "Select Membership Type",
-                                      new { @class = "form-control", id = "ddlMembershipType" })
-                @Html.ValidationMessageFor(model => model.First().MembershipType)
+                <label for="txtPhone">Phone</label>
+                <input class="form-control" placeholder="Phone" id="txtPhone" name="Phone" />
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.First().StartMembershipDate)
-                @Html.TextBoxFor(model => model.First().StartMembershipDate, new { @class = "form-control", placeholder = "Start Membership Date", type = "date", id = "txtStartMembershipDate" })
-                @Html.ValidationMessageFor(model => model.First().StartMembershipDate)
+                <label for="ddlMembershipType">Membership Type</label>
+                @Html.DropDownList("MembershipType",
+                                  new SelectList(new List<string>
+                                  {
+                                      "bodybuilding",
+                                      "taekwondo",
+                                      "boxing",
+                                      "full-contact",
+                                      "karate",
+                                      "aerobic"
+                                  }),
+                                  "Select Membership Type",
+                                  new { @class = "form-control", id = "ddlMembershipType" })
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.First().EndMembershipDate)
-                @Html.TextBoxFor(model => model.First().EndMembershipDate, new { @class = "form-control", placeholder = "End Membership Date", type = "date", id = "txtEndMembershipDate" })
-                @Html.ValidationMessageFor(model => model.First().EndMembershipDate)
+                <label for="txtStartMembershipDate">Start Membership Date</label>
+                <input class="form-control" type="date" id="txtStartMembershipDate" name="StartMembershipDate" />
+            </div>
+
+            <div class="form-group">
+                <label for="txtEndMembershipDate">End Membership Date</label>
+                <input class="form-control" type="date" id="txtEndMembershipDate" name="EndMembershipDate" />
             </div>
 
             <div class="form-group">
@@ -110,18 +108,18 @@
             $('input[type="checkbox"]').change(function () {
                 if (this.checked) {
                     var memberId = $(this).val();
-                    // AJAX call to get member details
                     $.ajax({
                         url: '@Url.Action("GetMemberDetails", "Member")',
                         type: 'GET',
                         data: { id: memberId },
                         success: function (data) {
+                            $('#Id').val(data.Id);
                             $('#txtNom').val(data.Nom);
                             $('#txtPrenom').val(data.Prenom);
                             $('#txtPhone').val(data.Phone);
                             $('#ddlMembershipType').val(data.MembershipType);
-                            $('#txtStartMembershipDate').val(data.StartMembershipDate);
-                            $('#txtEndMembershipDate').val(data.EndMembershipDate);
+                            $('#txtStartMembershipDate').val((data.StartMembershipDate || '').substring(0, 10));
+                            $('#txtEndMembershipDate').val((data.EndMembershipDate || '').substring(0, 10));
                         },
                         error: function () {
                             alert('Error retrieving member details.');
