@@ -45,7 +45,6 @@ namespace GYMProject.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Add(Session session)
         {
             if (ModelState.IsValid)

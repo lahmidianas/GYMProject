@@ -31,7 +31,7 @@ namespace GYMProject.Data
                 var seedPassword = ConfigurationManager.AppSettings["SeedAdminPassword"];
                 if (string.IsNullOrWhiteSpace(seedPassword))
                 {
-                    throw new InvalidOperationException("AppSetting 'SeedAdminPassword' is required. Configure it in environment-specific Web.config transforms or deployment settings.");
+                    throw new InvalidOperationException("AppSetting 'SeedAdminPassword' must be set with a strong password.");
                 }
 
                 var passwordData = PasswordHasher.HashPassword(seedPassword);

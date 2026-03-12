@@ -70,8 +70,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        var antiForgeryToken = $('#sessionForm input[name="__RequestVerificationToken"]').val();
-
         function setCreateMode() {
             $('#sessionForm').attr('action', '@Url.Action("Add", "Session")');
             $('#sessionId').val(0);
@@ -114,10 +112,7 @@
             $.ajax({
                 type: 'POST',
                 url: '@Url.Action("Delete", "Session")',
-                data: {
-                    id: id,
-                    __RequestVerificationToken: antiForgeryToken
-                },
+                data: { id: id },
                 success: function (response) {
                     if (response.success) {
                         alert('Session deleted successfully!');
