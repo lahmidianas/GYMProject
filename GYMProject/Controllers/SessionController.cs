@@ -63,6 +63,7 @@ namespace GYMProject.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Update(Session session)
         {
             if (ModelState.IsValid)
@@ -76,6 +77,7 @@ namespace GYMProject.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
             if (_sessionRepository.Exists(id))
